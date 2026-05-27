@@ -1,0 +1,29 @@
+task,actor,condition,n_left_wins,n_right_wins,n_ties,n_excl_tie,left_winrate_excl_tie,ci_lo,ci_hi,positive_ci_excludes_50,actor_label,task_label,condition_label,panel_note,win_rate
+essay,deepseek-v3.2-or,amount,65,55,30,120,0.5417,0.4526,0.6281,False,DeepSeek V3.2,Essay,Larger amount,$1M side wins over $100,0.5417
+essay,gpt-5.4-mini-or,amount,67,30,53,97,0.6907,0.593,0.774,True,GPT-5.4 mini,Essay,Larger amount,$1M side wins over $100,0.6907
+essay,glm-5.1-or,amount,66,57,27,123,0.5366,0.4487,0.6223,False,GLM-5.1,Essay,Larger amount,$1M side wins over $100,0.5366
+essay,kimi-k2.5-or,amount,84,57,9,141,0.5957,0.5132,0.6732,True,Kimi K2.5,Essay,Larger amount,$1M side wins over $100,0.5957
+essay,mimo-v2-pro-or,amount,71,55,24,126,0.5635,0.4763,0.6469,False,MiMo V2 Pro,Essay,Larger amount,$1M side wins over $100,0.5635
+essay,qwen3.5-9b-or,amount,68,69,13,137,0.4964,0.4139,0.579,False,Qwen3.5 9B,Essay,Larger amount,$1M side wins over $100,0.4964
+essay,qwen3.6-plus-or,amount,63,51,36,114,0.5526,0.4611,0.6407,False,Qwen3.6 Plus,Essay,Larger amount,$1M side wins over $100,0.5526
+translation,deepseek-v3.2-or,amount,77,65,8,142,0.5423,0.4603,0.622,False,DeepSeek V3.2,Translation,Larger amount,$1M side wins over $100,0.5423
+translation,gpt-5.4-mini-or,amount,73,66,11,139,0.5252,0.4426,0.6064,False,GPT-5.4 mini,Translation,Larger amount,$1M side wins over $100,0.5252
+translation,glm-5.1-or,amount,57,67,26,124,0.4597,0.3745,0.5473,False,GLM-5.1,Translation,Larger amount,$1M side wins over $100,0.4597
+translation,kimi-k2.5-or,amount,61,69,15,130,0.4692,0.3856,0.5547,False,Kimi K2.5,Translation,Larger amount,$1M side wins over $100,0.4692
+translation,mimo-v2-pro-or,amount,67,67,16,134,0.5,0.4165,0.5835,False,MiMo V2 Pro,Translation,Larger amount,$1M side wins over $100,0.5
+translation,qwen3.5-9b-or,amount,64,78,8,142,0.4507,0.3712,0.5328,False,Qwen3.5 9B,Translation,Larger amount,$1M side wins over $100,0.4507
+translation,qwen3.6-plus-or,amount,58,75,17,133,0.4361,0.3548,0.521,False,Qwen3.6 Plus,Translation,Larger amount,$1M side wins over $100,0.4361
+incident_postmortem,deepseek-v3.2-or,amount,84,66,0,150,0.56,0.48,0.637,False,DeepSeek V3.2,Incident postmortem,Larger amount,$1M side wins over $100,0.56
+incident_postmortem,gpt-5.4-mini-or,amount,98,52,0,150,0.6533,0.5742,0.7248,True,GPT-5.4 mini,Incident postmortem,Larger amount,$1M side wins over $100,0.6533
+incident_postmortem,glm-5.1-or,amount,82,63,2,145,0.5655,0.4842,0.6435,False,GLM-5.1,Incident postmortem,Larger amount,$1M side wins over $100,0.5655
+incident_postmortem,kimi-k2.5-or,amount,83,62,2,145,0.5724,0.491,0.65,False,Kimi K2.5,Incident postmortem,Larger amount,$1M side wins over $100,0.5724
+incident_postmortem,mimo-v2-pro-or,amount,84,66,0,150,0.56,0.48,0.637,False,MiMo V2 Pro,Incident postmortem,Larger amount,$1M side wins over $100,0.56
+incident_postmortem,qwen3.5-9b-or,amount,76,72,2,148,0.5135,0.4337,0.5927,False,Qwen3.5 9B,Incident postmortem,Larger amount,$1M side wins over $100,0.5135
+incident_postmortem,qwen3.6-plus-or,amount,82,62,6,144,0.5694,0.4878,0.6475,False,Qwen3.6 Plus,Incident postmortem,Larger amount,$1M side wins over $100,0.5694
+grant_proposal_abstract,deepseek-v3.2-or,amount,70,80,0,150,0.4667,0.3887,0.5463,False,DeepSeek V3.2,Grant abstract,Larger amount,$1M side wins over $100,0.4667
+grant_proposal_abstract,gpt-5.4-mini-or,amount,77,73,0,150,0.5133,0.434,0.592,False,GPT-5.4 mini,Grant abstract,Larger amount,$1M side wins over $100,0.5133
+grant_proposal_abstract,glm-5.1-or,amount,72,78,0,150,0.48,0.4015,0.5594,False,GLM-5.1,Grant abstract,Larger amount,$1M side wins over $100,0.48
+grant_proposal_abstract,kimi-k2.5-or,amount,79,65,1,144,0.5486,0.4671,0.6276,False,Kimi K2.5,Grant abstract,Larger amount,$1M side wins over $100,0.5486
+grant_proposal_abstract,mimo-v2-pro-or,amount,81,69,0,150,0.54,0.4602,0.6178,False,MiMo V2 Pro,Grant abstract,Larger amount,$1M side wins over $100,0.54
+grant_proposal_abstract,qwen3.5-9b-or,amount,79,71,0,150,0.5267,0.4471,0.6049,False,Qwen3.5 9B,Grant abstract,Larger amount,$1M side wins over $100,0.5267
+grant_proposal_abstract,qwen3.6-plus-or,amount,95,55,0,150,0.6333,0.5538,0.7062,True,Qwen3.6 Plus,Grant abstract,Larger amount,$1M side wins over $100,0.6333

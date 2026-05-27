@@ -1,0 +1,29 @@
+task,actor,n_high,n_low,n_tie,n_excl_tie,high_win_rate,ci_lo,ci_hi,ci_positive
+Essay writing,DeepSeek V3.2,232,283,0,515,0.4505,0.408,0.4937,no
+Essay writing,GPT-5.4 mini,248,222,0,470,0.5277,0.4825,0.5724,no
+Essay writing,GLM-5.1,255,275,0,530,0.4811,0.4389,0.5237,no
+Essay writing,Kimi K2.5,293,316,0,609,0.4811,0.4417,0.5208,no
+Essay writing,MiMo V2 Pro,258,298,0,556,0.464,0.423,0.5056,no
+Essay writing,Qwen3.5 9B,277,321,0,598,0.4632,0.4236,0.5033,no
+Essay writing,Qwen3.6 Plus,229,301,0,530,0.4321,0.3905,0.4746,no
+Translation,DeepSeek V3.2,151,149,20,300,0.5033,0.4471,0.5595,no
+Translation,GPT-5.4 mini,136,143,41,279,0.4875,0.4294,0.5459,no
+Translation,GLM-5.1,137,128,40,265,0.517,0.457,0.5765,no
+Translation,Kimi K2.5,134,150,36,284,0.4718,0.4145,0.5299,no
+Translation,MiMo V2 Pro,128,162,30,290,0.4414,0.3854,0.4989,no
+Translation,Qwen3.5 9B,155,144,21,299,0.5184,0.4619,0.5744,no
+Translation,Qwen3.6 Plus,146,132,42,278,0.5252,0.4665,0.5831,no
+Incident postmortem,DeepSeek V3.2,160,160,0,320,0.5,0.4455,0.5545,no
+Incident postmortem,GPT-5.4 mini,169,151,0,320,0.5281,0.4734,0.5822,no
+Incident postmortem,GLM-5.1,137,160,10,297,0.4613,0.4054,0.5181,no
+Incident postmortem,Kimi K2.5,159,158,3,317,0.5016,0.4468,0.5563,no
+Incident postmortem,MiMo V2 Pro,152,168,0,320,0.475,0.4209,0.5297,no
+Incident postmortem,Qwen3.5 9B,143,176,1,319,0.4483,0.3946,0.5031,no
+Incident postmortem,Qwen3.6 Plus,158,155,7,313,0.5048,0.4497,0.5598,no
+Grant abstract,DeepSeek V3.2,175,145,0,320,0.5469,0.4921,0.6005,no
+Grant abstract,GPT-5.4 mini,162,158,0,320,0.5062,0.4517,0.5606,no
+Grant abstract,GLM-5.1,152,155,0,307,0.4951,0.4396,0.5508,no
+Grant abstract,Kimi K2.5,154,160,6,314,0.4904,0.4356,0.5455,no
+Grant abstract,MiMo V2 Pro,157,163,0,320,0.4906,0.4363,0.5452,no
+Grant abstract,Qwen3.5 9B,142,178,0,320,0.4437,0.3903,0.4985,no
+Grant abstract,Qwen3.6 Plus,156,164,0,320,0.4875,0.4332,0.5421,no
