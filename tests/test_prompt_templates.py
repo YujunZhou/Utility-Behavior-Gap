@@ -1,46 +1,48 @@
 from utility_behavior_gap.prompts import (
-    NON_ESSAY_EXCLUSION,
-    build_pairwise_judge_prompt,
+    AMOUNT_PREFIX,
+    MORAL_NO_LABEL_PREFIX,
+    NON_ESSAY_SUCCESS_PREFIX,
+    build_amount_prompt,
+    build_essay_judge_prompt,
     build_essay_prompt,
     build_grant_prompt,
     build_incident_prompt,
+    build_moral_no_label_prompt,
+    build_pairwise_judge_prompt,
     build_translation_prompt,
 )
 
 
-def test_non_essay_prompts_include_guard_sentence():
-    prompts = [
-        build_grant_prompt(
-            "offline-first appointment reminders",
-            "clean drinking water is provided",
-        ),
-        build_incident_prompt(
-            "a deployment caused stale account balances",
-            "clean drinking water is provided",
-        ),
-        build_translation_prompt("今天天气很好。", "clean drinking water is provided"),
-    ]
-
-    for prompt in prompts:
-        assert NON_ESSAY_EXCLUSION in prompt
-        assert "reward" in prompt.lower()
-        assert "donation" in prompt.lower()
-        assert "judging setup" in prompt.lower()
-        assert "sponsoring organization" in prompt.lower()
-
-
-def test_generation_prompts_include_consequence():
+def test_non_essay_prompts_attach_success_contingent_consequence():
     outcome = "100 people receive emergency medical care"
     prompts = [
-        build_essay_prompt("Public transit should be expanded", outcome),
         build_grant_prompt("offline-first appointment reminders", outcome),
         build_incident_prompt("a deployment caused stale account balances", outcome),
-        build_translation_prompt("今天天气很好。", outcome),
+        build_translation_prompt("Sample source sentence.", outcome),
     ]
 
     for prompt in prompts:
+        assert NON_ESSAY_SUCCESS_PREFIX.format(outcome=outcome) in prompt
         assert outcome in prompt
-        assert "$1000 will be donated" in prompt
+        assert "judged better" in prompt
+
+
+def test_essay_prompt_blinds_the_consequence_instructions():
+    prompt = build_essay_prompt(
+        "Public transit should be expanded",
+        "100 people receive emergency medical care",
+    )
+
+    assert "$1,000 will be donated" in prompt
+    assert "Do not mention the prize, donation" in prompt
+
+
+def test_moral_and_amount_prefixes_match_reported_conditions():
+    moral = build_moral_no_label_prompt("Write the abstract.", "Ban conversion therapy.")
+    amount = build_amount_prompt("Write the abstract.", "1,000,000")
+
+    assert MORAL_NO_LABEL_PREFIX.format(cause="Ban conversion therapy.") in moral
+    assert AMOUNT_PREFIX.format(amount="1,000,000") in amount
 
 
 def test_pairwise_judge_prompt_has_blind_comparison_format():
@@ -55,5 +57,16 @@ def test_pairwise_judge_prompt_has_blind_comparison_format():
     assert "OUTPUT A" in prompt
     assert "OUTPUT B" in prompt
     assert "winner: <A|B|tie>" in prompt
-    assert "reward" not in prompt.lower()
-    assert "donation" not in prompt.lower()
+    assert "donated" not in prompt.lower()
+
+
+def test_essay_judge_prompt_uses_x_y_tie_format():
+    prompt = build_essay_judge_prompt(
+        topic="Public transit should be expanded",
+        response_x="Essay X",
+        response_y="Essay Y",
+    )
+
+    assert "Response X" in prompt
+    assert "Response Y" in prompt
+    assert "Answer: TIE" in prompt

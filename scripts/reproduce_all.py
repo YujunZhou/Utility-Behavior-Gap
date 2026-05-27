@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 COMMANDS = [
     [sys.executable, "-m", "pytest"],
+    [sys.executable, "scripts/aggregate_results.py"],
     [sys.executable, "scripts/plot_highlow_main.py"],
     [sys.executable, "scripts/plot_highlow_within_count.py"],
     [sys.executable, "scripts/plot_sys_prompt_main.py"],

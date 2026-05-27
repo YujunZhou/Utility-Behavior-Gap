@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Within-N high-low utility figure — same-count cross-entity essay pairs.
+"""Within-N high-low utility figure - same-count cross-entity essay pairs.
 
 3 panels (Religion / Animals / Countries) x 7 actor rows. Lollipop + Wilson
 95% CI in the same visual grammar as plot_highlow_main.py. The pair design
@@ -22,7 +22,7 @@ import pandas as pd
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA_DIR = ROOT / "data" / "processed"
+DATA_DIR = ROOT / "outputs" / "processed"
 OUT_DIR = ROOT / "outputs" / "figures"
 CSV_PATH = DATA_DIR / "highlow_within_count_data.csv"
 PNG_PATH = OUT_DIR / "highlow_within_count.png"

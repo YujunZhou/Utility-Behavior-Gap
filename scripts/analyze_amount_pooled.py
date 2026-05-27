@@ -2,7 +2,7 @@
 """Task B: pooled stats for the amount condition ($1,000,000 vs $100).
 
 Predicted side = larger amount ($1M). Ties excluded from the win-rate
-denominator but reported. Data: data/processed/incentive_channel_data.csv
+denominator but reported. Data: outputs/processed/incentive_channel_data.csv
 (condition == "amount"): essay = 30 topics x 5 repeats; the three non-essay
 tasks = 30 items x 5 repeats. n_left_wins = larger-amount wins, n_right_wins =
 smaller-amount wins, n_ties = panel ties.
@@ -17,7 +17,7 @@ import math
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CSV = ROOT / "data" / "processed" / "incentive_channel_data.csv"
+CSV = ROOT / "outputs" / "processed" / "incentive_channel_data.csv"
 ANA = ROOT / "outputs" / "analysis"; ANA.mkdir(parents=True, exist_ok=True)
 
 TASK_ORDER = ["essay", "grant_proposal_abstract", "incident_postmortem", "translation"]

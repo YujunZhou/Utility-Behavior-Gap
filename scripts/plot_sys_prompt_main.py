@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Replacement Figure 6 — strong-vs-normal system prompt calibration.
+"""Replacement Figure 6 - strong-vs-normal system prompt calibration.
 
 Mirrors plot_highlow_main.py and plot_incentive_amount_main.py so all three
 four-task panels share one visual grammar: per-actor lollipop with Wilson
 95% CI (recomputed from wins / losses), dashed chance line, mint highlight
 for CI-positive rows, and an "n = ... pairs / actor" annotation per panel.
 
-Data source: data/processed/system_prompt_calibration_data.csv, columns
+Data source: outputs/processed/system_prompt_calibration_data.csv, columns
 strong_wins / normal_wins / ties.
 """
 
@@ -24,7 +24,7 @@ import pandas as pd
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA_DIR = ROOT / "data" / "processed"
+DATA_DIR = ROOT / "outputs" / "processed"
 OUT_DIR = ROOT / "outputs" / "figures"
 CSV_PATH = DATA_DIR / "system_prompt_calibration_data.csv"
 PNG_PATH = OUT_DIR / "sys_prompt_main.png"

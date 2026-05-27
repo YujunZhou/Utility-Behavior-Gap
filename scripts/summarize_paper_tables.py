@@ -10,8 +10,8 @@ from typing import Iterable
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA = ROOT / "data"
 OUT = ROOT / "outputs" / "analysis"
+PROCESSED = ROOT / "outputs" / "processed"
 
 
 def read_rows(path: Path) -> list[dict[str, str]]:
@@ -92,13 +92,13 @@ def summarize_comparison(
 
 
 def build_cue_summary() -> list[dict]:
-    highlow = read_rows(DATA / "processed" / "highlow_main_data.csv")
-    same_count = read_rows(DATA / "processed" / "highlow_within_count_data.csv")
-    system = read_rows(DATA / "processed" / "system_prompt_calibration_data.csv")
-    moral = read_rows(DATA / "processed" / "moral_nolabel_main_data.csv")
+    highlow = read_rows(PROCESSED / "highlow_main_data.csv")
+    same_count = read_rows(PROCESSED / "highlow_within_count_data.csv")
+    system = read_rows(PROCESSED / "system_prompt_calibration_data.csv")
+    moral = read_rows(PROCESSED / "moral_nolabel_main_data.csv")
     amount = [
         row
-        for row in read_rows(DATA / "processed" / "incentive_channel_data.csv")
+        for row in read_rows(PROCESSED / "incentive_channel_data.csv")
         if row["condition"] == "amount"
     ]
 
@@ -107,7 +107,7 @@ def build_cue_summary() -> list[dict]:
             label="High-low utility main",
             predicted_side="high utility",
             other_side="low utility",
-            source="data/processed/highlow_main_data.csv",
+            source="outputs/processed/highlow_main_data.csv",
             rows=highlow,
             predicted_col="n_high",
             other_col="n_low",
@@ -119,7 +119,7 @@ def build_cue_summary() -> list[dict]:
             label="Same-count high-low",
             predicted_side="same-count high utility",
             other_side="same-count low utility",
-            source="data/processed/highlow_within_count_data.csv",
+            source="outputs/processed/highlow_within_count_data.csv",
             rows=same_count,
             predicted_col="n_high",
             other_col="n_low",
@@ -131,7 +131,7 @@ def build_cue_summary() -> list[dict]:
             label="Strong vs normal prompt",
             predicted_side="strong prompt",
             other_side="normal prompt",
-            source="data/processed/system_prompt_calibration_data.csv",
+            source="outputs/processed/system_prompt_calibration_data.csv",
             rows=system,
             predicted_col="strong_wins",
             other_col="normal_wins",
@@ -143,7 +143,7 @@ def build_cue_summary() -> list[dict]:
             label="Moral no-label",
             predicted_side="good cause",
             other_side="harmful cause",
-            source="data/processed/moral_nolabel_main_data.csv",
+            source="outputs/processed/moral_nolabel_main_data.csv",
             rows=moral,
             predicted_col="n_good",
             other_col="n_bad",
@@ -155,7 +155,7 @@ def build_cue_summary() -> list[dict]:
             label="Larger vs smaller amount",
             predicted_side="$1,000,000",
             other_side="$100",
-            source="data/processed/incentive_channel_data.csv",
+            source="outputs/processed/incentive_channel_data.csv",
             rows=amount,
             predicted_col="n_left_wins",
             other_col="n_right_wins",
@@ -188,7 +188,7 @@ def build_judging_tie_summary(cue_rows: list[dict]) -> list[dict]:
 
 
 def build_utility_replication_tables() -> tuple[list[dict], list[dict]]:
-    rows = read_rows(DATA / "analysis" / "utility_replication_diagnostics_2026-05-06.csv")
+    rows = read_rows(OUT / "utility_replication_diagnostics.csv")
     holdout = []
     monotonicity = []
     for row in rows:

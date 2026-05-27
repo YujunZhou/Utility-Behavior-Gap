@@ -1,11 +1,14 @@
 __pycache__/
 .pytest_cache/
 .venv/
+.codex/
 *.py[cod]
 *.log
 .env
 outputs/
 results/
+data/analysis/
 data/pairs/
+data/processed/
 data/sources/
 figures/*.svg

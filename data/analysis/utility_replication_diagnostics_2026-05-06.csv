@@ -1,8 +1,0 @@
-actor,religions_holdout_accuracy,religions_entity_mean_spearman,religions_entities,animals_holdout_accuracy,animals_entity_mean_spearman,animals_entities,countries_holdout_accuracy,countries_entity_mean_spearman,countries_entities,political_holdout_accuracy
-deepseek-v3.2-or,0.9757,0.9995,6,0.9255,1.0,2,0.9444,1.0,50,0.8889
-kimi-k2.5-or,0.9829,0.9996,6,0.9487,1.0,2,0.9516,1.0,50,0.9281
-gpt-5.4-mini-or,0.9872,0.9996,6,0.9172,1.0,2,0.948,1.0,50,0.9194
-glm-5.1-or,0.9829,0.9996,6,0.9586,1.0,2,0.8907,1.0,50,0.9194
-mimo-v2-pro-or,0.9857,0.9979,6,0.9536,1.0,2,0.9624,1.0,50,0.9237
-qwen3.5-9b-or,0.9772,0.9997,6,0.9404,1.0,2,0.9373,1.0,50,0.8889
-qwen3.6-plus-or,0.9929,0.9999,6,0.9553,1.0,2,0.9355,1.0,50,0.9412

@@ -2,7 +2,7 @@
 """Recompute the utility-gap dose-response appendix analysis.
 
 Input:
-  data/analysis/utility_gap_dose_response_trials.csv
+  outputs/analysis/utility_gap_dose_response_trials.csv
 
 Outputs:
   outputs/analysis/utility_gap_dose_response_bins.csv
@@ -27,10 +27,9 @@ import statsmodels.formula.api as smf
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA = ROOT / "data" / "analysis"
 ANA = ROOT / "outputs" / "analysis"
 FIG = ROOT / "outputs" / "figures"
-TRIALS_CSV = DATA / "utility_gap_dose_response_trials.csv"
+TRIALS_CSV = ANA / "utility_gap_dose_response_trials.csv"
 BINS_CSV = ANA / "utility_gap_dose_response_bins.csv"
 REG_CSV = ANA / "utility_gap_dose_response_regression.csv"
 PDF_PATH = FIG / "utility_gap_dose_response.pdf"

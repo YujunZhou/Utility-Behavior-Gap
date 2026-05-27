@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Replacement Figure 4 — amount manipulation ($1M vs $100) forest plot.
+"""Replacement Figure 4 - amount manipulation ($1M vs $100) forest plot.
 
 Mirrors plot_highlow_main.py so the four-task panels in the paper share one
 visual grammar: per-actor lollipop with Wilson 95% CI, dashed chance line,
 mint highlight for CI-positive rows, panel chip showing "k / 7 CI-positive".
 
-Data source: data/processed/incentive_channel_data.csv.
+Data source: outputs/processed/incentive_channel_data.csv.
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ import pandas as pd
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA_DIR = ROOT / "data" / "processed"
+DATA_DIR = ROOT / "outputs" / "processed"
 OUT_DIR = ROOT / "outputs" / "figures"
 CSV_PATH = DATA_DIR / "incentive_channel_data.csv"
 PNG_PATH = OUT_DIR / "incentive_amount_main.png"

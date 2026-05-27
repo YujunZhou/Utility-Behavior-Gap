@@ -15,7 +15,7 @@ import pandas as pd
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA_DIR = ROOT / "data" / "processed"
+DATA_DIR = ROOT / "outputs" / "processed"
 OUT_DIR = ROOT / "outputs" / "figures"
 CSV_PATH = DATA_DIR / "highlow_main_data.csv"
 PNG_PATH = OUT_DIR / "highlow_main.png"

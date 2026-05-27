@@ -7,7 +7,7 @@ per-actor lollipop with Wilson 95% CI, dashed chance line, mint highlight for
 CI-positive rows, "k / 7 CI-positive" chip. The win rate is the good-cause
 side (no explicit moral label; valence implicit in the cause text).
 
-Data source: data/processed/moral_nolabel_main_data.csv.
+Data source: outputs/processed/moral_nolabel_main_data.csv.
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA_DIR = ROOT / "data" / "processed"
+DATA_DIR = ROOT / "outputs" / "processed"
 OUT_DIR = ROOT / "outputs" / "figures"
 CSV_PATH = DATA_DIR / "moral_nolabel_main_data.csv"
 PNG_PATH = OUT_DIR / "moral_nolabel_main.png"
