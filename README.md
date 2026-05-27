@@ -26,7 +26,9 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Generated files are written under `outputs/`, which is ignored by git.
+Generated files are written under `outputs/`, which is created on demand and
+ignored by git. The repository does not store generated intermediate or final
+analysis outputs.
 
 ## Data Layout
 
