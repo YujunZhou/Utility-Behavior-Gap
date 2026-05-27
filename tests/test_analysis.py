@@ -1,6 +1,7 @@
 import pytest
 
 from utility_behavior_gap.analysis import comparison_counts
+from utility_behavior_gap.judging import derive_counted_winner_condition
 from utility_behavior_gap.stats import parse_entity_count, spearman, wilson_ci
 
 
@@ -30,3 +31,39 @@ def test_parse_entity_count_and_spearman():
     ) == ("buddhist", 100)
 
     assert spearman([1, 2, 3], [10, 20, 30]) == pytest.approx(1.0)
+
+
+def test_legacy_essay_highlow_disagreement_is_dropped():
+    row = {
+        "comparison": "highlow_main",
+        "source_run": "bg_fixed_topic_default",
+        "predicted_condition": "high",
+        "other_condition": "low",
+    }
+    votes = ["high", "low", "tie"]
+
+    assert derive_counted_winner_condition(row, votes) == ""
+
+
+def test_nonessay_highlow_split_panel_counts_as_tie():
+    row = {
+        "comparison": "highlow_main",
+        "source_run": "highlow_scaleup_translation_v1",
+        "predicted_condition": "high",
+        "other_condition": "low",
+    }
+    votes = ["high", "low", "tie"]
+
+    assert derive_counted_winner_condition(row, votes) == "tie"
+
+
+def test_calibration_unresolved_panel_counts_as_tie():
+    row = {
+        "comparison": "system_prompt",
+        "source_run": "essay_system_prompt",
+        "predicted_condition": "sys_strong",
+        "other_condition": "sys_normal",
+    }
+    votes = ["unresolved", "unresolved", "tie"]
+
+    assert derive_counted_winner_condition(row, votes) == "tie"

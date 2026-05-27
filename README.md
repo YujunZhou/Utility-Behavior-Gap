@@ -36,18 +36,31 @@ analysis outputs.
 Raw releasable inputs:
 
 - `data/raw/utility_options.csv`: fitted utility values for each actor,
-  outcome domain, and option.
+  outcome domain, and option. These fixed scores are the utility inputs used
+  by this paper's behavior experiments. They were produced with the Utility
+  Engineering utility-analysis pipeline
+  ([code](https://github.com/centerforaisafety/emergent-values/tree/main/utility_analysis),
+  [paper](https://arxiv.org/abs/2502.08640)); this release uses them as
+  upstream reproducibility inputs rather than re-running live utility
+  elicitation.
 - `data/raw/utility_pairwise_choices.csv`: compact pairwise utility-choice
-  counts used for the fitted utility stage.
+  counts used for the fitted utility stage. Included for inspection of the
+  upstream utility-engineering inputs; the release scripts start from the
+  fitted scores in `utility_options.csv`.
 - `data/raw/selected_pairs.csv`: sampled high-utility and low-utility outcome
-  pairs used in the behavior experiments.
+  pairs used in the behavior experiments. Included as a transparency record of
+  the sampled contrasts.
 - `data/raw/task_items.csv`: essay topics and non-essay task items.
+  Essay rows store the topic in `item_id` / `item_label`; non-essay rows also
+  include the full task prompt in `base_prompt`.
 - `data/raw/moral_cause_pairs.csv`: paired good-cause and harmful-cause texts
-  used in the no-label moral cue check.
+  used in the no-label moral cue check. Included as a transparency record of
+  the curated cause pairs.
 - `data/raw/judged_pairs.csv`: one row per judged pair, including the raw panel
   winner and the winner used by the paper's counting rule.
 - `data/raw/judge_votes.csv`: individual parsed judge votes for each judged
-  pair.
+  pair. The validation script checks that these votes reproduce the counted
+  winner used by `judged_pairs.csv`.
 
 Metadata:
 
@@ -78,8 +91,8 @@ Derived outputs are regenerated into:
 python -m utility_behavior_gap.scripts.reproduce_all
 ```
 
-This runs tests, builds derived tables from `data/raw`, regenerates figures,
-and writes paper-summary tables.
+This runs tests, builds derived tables from `data/raw`, validates judged-pair
+counting, regenerates figures, and writes paper-summary tables.
 
 ## Per-Result Commands
 
@@ -88,6 +101,16 @@ Build all derived CSVs:
 ```bash
 python -m utility_behavior_gap.scripts.aggregate_results
 ```
+
+Validate judged-pair inputs:
+
+```bash
+python -m utility_behavior_gap.scripts.validate_release_inputs
+```
+
+Inputs: `data/raw/judged_pairs.csv`, `data/raw/judge_votes.csv`
+
+Outputs: `outputs/analysis/judge_vote_validation_summary.csv`
 
 Main high-low utility result:
 
@@ -174,6 +197,35 @@ Outputs: `outputs/analysis/utility_gap_dose_response_bins.csv`,
 The regenerated trial table contains 10,487 reported high-low judged pairs,
 including 10,230 non-tied pairs.
 
+Utility top/bottom examples:
+
+```bash
+python -m utility_behavior_gap.scripts.plot_utility_top_bottom
+```
+
+Inputs: `outputs/analysis/utility_top_bottom_10_by_actor_domain.csv`
+
+Outputs: `outputs/figures/utility_top_bottom_examples.png`,
+`outputs/figures/utility_top_bottom_examples.pdf`
+
+## Counting Rule
+
+`judged_pairs.csv` stores both `panel_winner_condition` and
+`counted_winner_condition`. The latter is the condition used for all win-rate
+denominators. Tied panel decisions are excluded from non-tied denominators
+unless the paper reports ties explicitly.
+
+The historical essay high-low runs (`bg_fixed_topic_default` and
+`bg_fixed_topic_same_count`) used an older judge-panel export in which panel
+ties or three-way judge disagreements are not counted; these rows have an empty
+`counted_winner_condition`. Later high-low scale-up runs count panel ties as
+`tie`. Calibration comparisons (`system_prompt`, `moral_nolabel`, and
+`amount`) map unresolved or tied panel outcomes to `tie`, which is reported but
+excluded from the non-tied win-rate denominator. The implementation of this
+rule is in `src/utility_behavior_gap/judging.py`, and
+`python -m utility_behavior_gap.scripts.validate_release_inputs` verifies the
+released `counted_winner_condition` values from `judge_votes.csv`.
+
 ## Prompt Templates
 
 Prompt templates for the reported generation and judging conditions are in
@@ -188,4 +240,7 @@ utility-fit diagnostics, utility-gap dose-response, and top/bottom utility
 examples.
 
 Excluded: live API calling code, raw model-response dumps, run caches, logs,
-private notes, exploratory runs, and generated intermediate artifacts.
+private notes, exploratory runs, generated intermediate artifacts, and
+re-running the upstream Utility Engineering utility elicitation stage. The
+appendix's explicit moral-label diagnostic is not part of the release data; the
+release includes the moral no-label cue check used in the main text.

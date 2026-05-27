@@ -11,8 +11,10 @@ ENTRYPOINT_MODULES = [
     "utility_behavior_gap.scripts.plot_incentive_amount_main",
     "utility_behavior_gap.scripts.plot_moral_nolabel_main",
     "utility_behavior_gap.scripts.plot_sys_prompt_main",
+    "utility_behavior_gap.scripts.plot_utility_top_bottom",
     "utility_behavior_gap.scripts.reproduce_all",
     "utility_behavior_gap.scripts.summarize_paper_tables",
+    "utility_behavior_gap.scripts.validate_release_inputs",
 ]
 
 
