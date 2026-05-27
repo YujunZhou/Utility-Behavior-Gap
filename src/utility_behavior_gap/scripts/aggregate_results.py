@@ -3,14 +3,8 @@
 
 from __future__ import annotations
 
-import sys
-from pathlib import Path
-
-
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "src"))
-
-from utility_behavior_gap.analysis import aggregate_all  # noqa: E402
+from utility_behavior_gap.analysis import aggregate_all
+from utility_behavior_gap.paths import ROOT
 
 
 def main() -> None:

@@ -14,11 +14,12 @@ Outputs:
 from __future__ import annotations
 import csv
 import math
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-CSV = ROOT / "outputs" / "processed" / "incentive_channel_data.csv"
-ANA = ROOT / "outputs" / "analysis"; ANA.mkdir(parents=True, exist_ok=True)
+from utility_behavior_gap.paths import ANALYSIS, PROCESSED
+
+CSV = PROCESSED / "incentive_channel_data.csv"
+ANA = ANALYSIS
+ANA.mkdir(parents=True, exist_ok=True)
 
 TASK_ORDER = ["essay", "grant_proposal_abstract", "incident_postmortem", "translation"]
 TASK_LABEL = {"essay": "Essay", "grant_proposal_abstract": "Grant abstract",

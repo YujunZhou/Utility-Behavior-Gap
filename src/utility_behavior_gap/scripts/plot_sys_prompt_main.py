@@ -1,11 +1,19 @@
 #!/usr/bin/env python3
-"""Plot the main high-vs-low utility result."""
+"""Replacement Figure 6 - strong-vs-normal system prompt calibration.
+
+Mirrors plot_highlow_main.py and plot_incentive_amount_main.py so all three
+four-task panels share one visual grammar: per-actor lollipop with Wilson
+95% CI (recomputed from wins / losses), dashed chance line, mint highlight
+for CI-positive rows, and an "n = ... pairs / actor" annotation per panel.
+
+Data source: outputs/processed/system_prompt_calibration_data.csv, columns
+strong_wins / normal_wins / ties.
+"""
 
 from __future__ import annotations
 
 import math
 import os
-from pathlib import Path
 
 os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")
 
@@ -13,18 +21,15 @@ import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import pandas as pd
 
+from utility_behavior_gap.paths import FIGURES, PROCESSED
 
-ROOT = Path(__file__).resolve().parents[1]
-DATA_DIR = ROOT / "outputs" / "processed"
-OUT_DIR = ROOT / "outputs" / "figures"
-CSV_PATH = DATA_DIR / "highlow_main_data.csv"
-PNG_PATH = OUT_DIR / "highlow_main.png"
-PDF_PATH = OUT_DIR / "highlow_main.pdf"
+DATA_DIR = PROCESSED
+OUT_DIR = FIGURES
+CSV_PATH = DATA_DIR / "system_prompt_calibration_data.csv"
+PNG_PATH = OUT_DIR / "sys_prompt_main.png"
+PDF_PATH = OUT_DIR / "sys_prompt_main.pdf"
 
 
-# ------------------------------------------------------------------
-# Palette (matches plot_system_prompt_calibration.py)
-# ------------------------------------------------------------------
 INK = "#1A1A1F"
 SUBTLE = "#6B7280"
 GRID = "#E9EDF5"
@@ -58,7 +63,6 @@ CI_POS_PILL_INK = "#2F7A4F"
 NEUTRAL_PILL_BG = "#F1F2F5"
 NEUTRAL_PILL_INK = "#4B5563"
 
-
 TASK_ORDER = [
     "Essay writing",
     "Grant abstract",
@@ -67,13 +71,38 @@ TASK_ORDER = [
 ]
 
 
-# ------------------------------------------------------------------
+def wilson_ci(wins: int, total: int, z: float = 1.96):
+    if total == 0:
+        return (float("nan"), float("nan"), float("nan"))
+    p = wins / total
+    denom = 1.0 + z * z / total
+    center = (p + z * z / (2 * total)) / denom
+    half = (z * math.sqrt(p * (1 - p) / total + z * z / (4 * total * total))) / denom
+    return p, max(0.0, center - half), min(1.0, center + half)
+
+
 def load_data() -> pd.DataFrame:
     df = pd.read_csv(CSV_PATH)
-    df["high_win_rate"] = df["high_win_rate"].astype(float)
-    df["ci_lo"] = df["ci_lo"].astype(float)
-    df["ci_hi"] = df["ci_hi"].astype(float)
-    return df
+    rows = []
+    for _, r in df.iterrows():
+        wins = int(r["strong_wins"])
+        losses = int(r["normal_wins"])
+        ties = int(r["ties"])
+        total = wins + losses
+        p, lo, hi = wilson_ci(wins, total)
+        rows.append({
+            "task":          r["task"],
+            "actor":         r["actor"],
+            "n_strong":      wins,
+            "n_normal":      losses,
+            "n_tie":         ties,
+            "n_excl_tie":    total,
+            "high_win_rate": round(p, 4),
+            "ci_lo":         round(lo, 4),
+            "ci_hi":         round(hi, 4),
+            "ci_positive":   "yes" if lo > 0.50 else "no",
+        })
+    return pd.DataFrame(rows)
 
 
 def _strip_spines(ax, keep=()):
@@ -85,21 +114,14 @@ def _strip_spines(ax, keep=()):
             ax.spines[s].set_visible(False)
 
 
-def render_panel(
-    ax,
-    df_task: pd.DataFrame,
-    task: str,
-    panel_letter: str,
-    *,
-    show_xlabel: bool,
-) -> None:
+def render_panel(ax, df_task: pd.DataFrame, task: str, panel_letter: str,
+                 *, show_xlabel: bool) -> None:
     ax.set_facecolor(PANEL_BG)
 
     actors = [a for a in ACTOR_ORDER if a in set(df_task["actor"])]
     df_task = df_task.set_index("actor").loc[actors].reset_index()
     n = len(actors)
 
-    # Background tint for CI-positive rows.
     for i, row in df_task.iterrows():
         y = n - 1 - i
         if str(row["ci_positive"]).strip().lower() == "yes":
@@ -108,10 +130,8 @@ def render_panel(
                 facecolor=CI_POS_BAND, edgecolor="none", zorder=0,
             ))
 
-    # Chance reference line at 0.50.
     ax.axvline(0.50, color=CHANCE_LINE, lw=1.2, ls=(0, (4, 3)), alpha=0.9, zorder=1)
 
-    # Per-actor lollipop + CI.
     for i, row in df_task.iterrows():
         y = n - 1 - i
         actor = row["actor"]
@@ -121,17 +141,14 @@ def render_panel(
         hi = float(row["ci_hi"])
         ci_pos = str(row["ci_positive"]).strip().lower() == "yes"
 
-        # CI bar.
         ax.hlines(y, lo, hi, color=c, lw=4.0,
                   alpha=0.42 if ci_pos else 0.30,
                   capstyle="round", zorder=2)
         for x in (lo, hi):
             ax.vlines(x, y - 0.16, y + 0.16, color=c,
                       lw=1.3, alpha=0.55 if ci_pos else 0.40, zorder=2)
-
         ax.scatter(rate, y, s=145, color=c, edgecolor="white",
                    linewidth=1.6, zorder=4)
-        # Value label to the right of the CI bar.
         label_x = min(hi + 0.025, 1.02)
         ax.text(label_x, y, f"{rate:.2f}",
                 ha="left", va="center",
@@ -148,7 +165,7 @@ def render_panel(
     ax.set_xticks([0.00, 0.25, 0.50, 0.75, 1.00])
     ax.tick_params(axis="x", labelsize=10)
     if show_xlabel:
-        ax.set_xlabel("High-utility-side win rate (ties excluded)",
+        ax.set_xlabel("Strong-prompt-side win rate (ties excluded)",
                       color=INK, labelpad=4, fontsize=11)
     else:
         ax.set_xlabel("")
@@ -159,7 +176,6 @@ def render_panel(
     ax.tick_params(axis="y", length=0)
     ax.tick_params(axis="x", colors=SUBTLE, length=3, width=0.6)
 
-    # Title and CI-positive chip.
     ax.text(-0.005, 1.20, task, transform=ax.transAxes,
             ha="left", va="top",
             fontsize=13, color=INK, fontweight="bold")
@@ -175,13 +191,10 @@ def render_panel(
             bbox=dict(boxstyle="round,pad=0.30",
                       facecolor=chip_bg, edgecolor="none"))
 
-    # Sample-size note below the title to contextualize confidence intervals.
     n_excl = df_task["n_excl_tie"].astype(int)
     n_lo, n_hi = int(n_excl.min()), int(n_excl.max())
-    if n_lo == n_hi:
-        n_note = f"n = {n_lo} pairs / actor"
-    else:
-        n_note = f"n = {n_lo}-{n_hi} pairs / actor"
+    n_note = (f"n = {n_lo} pairs / actor"
+              if n_lo == n_hi else f"n = {n_lo}-{n_hi} pairs / actor")
     ax.text(-0.005, 1.06, n_note, transform=ax.transAxes,
             ha="left", va="top",
             fontsize=9.0, color=SUBTLE)
@@ -195,7 +208,7 @@ def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     df = load_data()
-    print(df.head())
+    print(df)
 
     plt.rcParams.update({
         "font.family": "DejaVu Sans",

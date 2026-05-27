@@ -8,10 +8,9 @@ import math
 from pathlib import Path
 from typing import Iterable
 
+from utility_behavior_gap.paths import ANALYSIS, PROCESSED
 
-ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "outputs" / "analysis"
-PROCESSED = ROOT / "outputs" / "processed"
+OUT = ANALYSIS
 
 
 def read_rows(path: Path) -> list[dict[str, str]]:

@@ -16,7 +16,6 @@ from __future__ import annotations
 import csv
 import math
 import os
-from pathlib import Path
 
 os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")
 
@@ -25,10 +24,10 @@ import numpy as np
 import pandas as pd
 import statsmodels.formula.api as smf
 
+from utility_behavior_gap.paths import ANALYSIS, FIGURES
 
-ROOT = Path(__file__).resolve().parents[1]
-ANA = ROOT / "outputs" / "analysis"
-FIG = ROOT / "outputs" / "figures"
+ANA = ANALYSIS
+FIG = FIGURES
 TRIALS_CSV = ANA / "utility_gap_dose_response_trials.csv"
 BINS_CSV = ANA / "utility_gap_dose_response_bins.csv"
 REG_CSV = ANA / "utility_gap_dose_response_regression.csv"

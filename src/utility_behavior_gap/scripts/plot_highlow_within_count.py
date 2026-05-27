@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import math
 import os
-from pathlib import Path
 
 os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")
 
@@ -20,10 +19,10 @@ import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import pandas as pd
 
+from utility_behavior_gap.paths import FIGURES, PROCESSED
 
-ROOT = Path(__file__).resolve().parents[1]
-DATA_DIR = ROOT / "outputs" / "processed"
-OUT_DIR = ROOT / "outputs" / "figures"
+DATA_DIR = PROCESSED
+OUT_DIR = FIGURES
 CSV_PATH = DATA_DIR / "highlow_within_count_data.csv"
 PNG_PATH = OUT_DIR / "highlow_within_count.png"
 PDF_PATH = OUT_DIR / "highlow_within_count.pdf"

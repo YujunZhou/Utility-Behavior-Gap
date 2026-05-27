@@ -24,6 +24,7 @@ Use Python 3.10 or newer.
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+pip install -e . --no-deps
 ```
 
 Generated files are written under `outputs/`, which is created on demand and
@@ -54,6 +55,17 @@ Metadata:
 - `data/metadata/domains.csv`
 - `data/metadata/tasks.csv`
 
+Source code:
+
+- `src/utility_behavior_gap/analysis.py`: aggregates raw release inputs into
+  derived paper tables.
+- `src/utility_behavior_gap/stats.py`: statistical helpers used by the
+  aggregation and diagnostics.
+- `src/utility_behavior_gap/prompts.py`: prompt templates for the reported
+  generation and judging conditions.
+- `src/utility_behavior_gap/scripts/`: command-line entry points for full and
+  per-result reproduction.
+
 Derived outputs are regenerated into:
 
 - `outputs/processed/*.csv`
@@ -63,7 +75,7 @@ Derived outputs are regenerated into:
 ## Reproduce Everything
 
 ```bash
-python scripts/reproduce_all.py
+python -m utility_behavior_gap.scripts.reproduce_all
 ```
 
 This runs tests, builds derived tables from `data/raw`, regenerates figures,
@@ -74,13 +86,13 @@ and writes paper-summary tables.
 Build all derived CSVs:
 
 ```bash
-python scripts/aggregate_results.py
+python -m utility_behavior_gap.scripts.aggregate_results
 ```
 
 Main high-low utility result:
 
 ```bash
-python scripts/plot_highlow_main.py
+python -m utility_behavior_gap.scripts.plot_highlow_main
 ```
 
 Inputs: `outputs/processed/highlow_main_data.csv`
@@ -91,7 +103,7 @@ Outputs: `outputs/figures/highlow_main.png`,
 Within-count check:
 
 ```bash
-python scripts/plot_highlow_within_count.py
+python -m utility_behavior_gap.scripts.plot_highlow_within_count
 ```
 
 Inputs: `outputs/processed/highlow_within_count_data.csv`
@@ -102,7 +114,7 @@ Outputs: `outputs/figures/highlow_within_count.png`,
 System-prompt calibration:
 
 ```bash
-python scripts/plot_sys_prompt_main.py
+python -m utility_behavior_gap.scripts.plot_sys_prompt_main
 ```
 
 Inputs: `outputs/processed/system_prompt_calibration_data.csv`
@@ -113,7 +125,7 @@ Outputs: `outputs/figures/sys_prompt_main.png`,
 Moral no-label cue check:
 
 ```bash
-python scripts/plot_moral_nolabel_main.py
+python -m utility_behavior_gap.scripts.plot_moral_nolabel_main
 ```
 
 Inputs: `outputs/processed/moral_nolabel_main_data.csv`
@@ -124,8 +136,8 @@ Outputs: `outputs/figures/moral_nolabel_main.png`,
 Larger-amount consequence check:
 
 ```bash
-python scripts/plot_incentive_amount_main.py
-python scripts/analyze_amount_pooled.py
+python -m utility_behavior_gap.scripts.plot_incentive_amount_main
+python -m utility_behavior_gap.scripts.analyze_amount_pooled
 ```
 
 Inputs: `outputs/processed/incentive_channel_data.csv`
@@ -138,7 +150,7 @@ Outputs: `outputs/figures/incentive_amount_main.png`,
 Paper summary tables:
 
 ```bash
-python scripts/summarize_paper_tables.py
+python -m utility_behavior_gap.scripts.summarize_paper_tables
 ```
 
 Outputs: `outputs/analysis/cue_summary.csv`,
@@ -149,7 +161,7 @@ Outputs: `outputs/analysis/cue_summary.csv`,
 Utility-gap dose response:
 
 ```bash
-python scripts/analyze_utility_gap_dose_response.py
+python -m utility_behavior_gap.scripts.analyze_utility_gap_dose_response
 ```
 
 Inputs: `outputs/analysis/utility_gap_dose_response_trials.csv`
