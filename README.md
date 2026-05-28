@@ -212,44 +212,6 @@ Inputs: `outputs/analysis/utility_top_bottom_10_by_actor_domain.csv`
 Outputs: `outputs/figures/utility_top_bottom_examples.png`,
 `outputs/figures/utility_top_bottom_examples.pdf`
 
-## Counting Rule
-
-`judged_pairs.csv` stores both `panel_winner_condition` and
-`counted_winner_condition`. The latter is the condition used for all win-rate
-denominators. Tied panel decisions are excluded from non-tied denominators
-unless the paper reports ties explicitly.
-
-The historical essay high-low runs (`bg_fixed_topic_default` and
-`bg_fixed_topic_same_count`) used an older judge-panel export in which panel
-ties or three-way judge disagreements are not counted; these rows have an empty
-`counted_winner_condition`. Later high-low scale-up runs count panel ties as
-`tie`. Calibration comparisons (`system_prompt`, `moral_nolabel`, and
-`amount`) map unresolved or tied panel outcomes to `tie`, which is reported but
-excluded from the non-tied win-rate denominator. The implementation of this
-rule is in `src/utility_behavior_gap/judging.py`, and
-`python -m utility_behavior_gap.scripts.validate_release_inputs` verifies the
-released `counted_winner_condition` values from `judge_votes.csv`.
-
-## Prompt Templates
-
-Prompt templates for the reported generation and judging conditions are in
-`src/utility_behavior_gap/prompts.py`. Task-item prompt strings used in the
-released non-essay records are also included in `data/raw/task_items.csv`.
-
-## Scope
-
-Included: reported high-low utility, same-count high-low, system-prompt
-calibration, moral no-label cue check, larger-amount consequence check,
-utility-fit diagnostics, utility-gap dose-response, and top/bottom utility
-examples.
-
-Excluded: live API calling code, raw model-response dumps, run caches, logs,
-private notes, exploratory runs, generated intermediate artifacts, and
-re-running the upstream Utility Engineering utility elicitation stage. The
-appendix's explicit moral-label diagnostic is not part of the release data; the
-release includes the moral no-label cue check used in the main text. Additional
-supporting task checks outside the main four-task generation grid are summarized
-in the paper but are not part of this artifact.
 
 ## Anonymous Release Notes
 
