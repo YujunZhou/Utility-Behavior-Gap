@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build all derived paper tables from the raw release data."""
+"""Build derived paper tables from generated judged-pair records."""
 
 from __future__ import annotations
 

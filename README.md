@@ -1,16 +1,17 @@
 # Utility-Behavior Gap
 
-This repository contains the reproducibility artifact for the paper's main
-utility-behavior gap analyses and releaseable appendix diagnostics. It starts
-from releasable experimental inputs: outcome utility data, selected high-low
-pairs, task items, moral cause pairs, panel-level judged comparisons, and
-individual judge votes. The scripts regenerate the processed tables,
-diagnostics, and figures listed below.
+This repository contains the public reproduction code for the paper's
+utility-behavior gap experiments. It is designed to rerun the behavioral
+generation and blind pairwise judging stages through OpenRouter, then rebuild
+the paper tables and figures from the newly generated local outputs.
 
-No live model access or model calls are required. Raw generated model outputs,
-judge free-text rationales, run caches, logs, and private notes are not
-included; the released judged records contain the condition metadata and parsed
-judge decisions needed to reproduce the listed statistics.
+The upstream utility fitting stage is the one exception: the fitted per-actor,
+per-outcome utility scores are included as fixed inputs in
+`data/inputs/utility_options.csv`. They were produced with the Utility
+Engineering pipeline
+([code](https://github.com/centerforaisafety/%65mergent-values/tree/main/utility_analysis),
+[paper](https://arxiv.org/abs/2502.08640)); this artifact starts from those
+scores and reruns the paper's behavioral experiments.
 
 ![Figure 1: Utility-behavior gap overview](figures/figure1.png)
 
@@ -27,189 +28,163 @@ pip install -r requirements.txt
 pip install -e . --no-deps
 ```
 
-Generated files are written under `outputs/`, which is created on demand and
-ignored by git. The repository does not store generated intermediate or final
-analysis outputs.
+Copy the OpenRouter configuration template and replace every `xxx` value with
+your local credentials and model ids:
+
+```bash
+cp .env.example .env
+```
+
+The repository never tracks `.env`, API keys, generated model outputs, judged
+records, processed tables, or final figures. All generated files go under
+`outputs/`, which is ignored by git.
 
 ## Data Layout
 
-Raw releasable inputs:
+Tracked reproduction inputs:
 
-- `data/raw/utility_options.csv`: fitted utility values for each actor,
-  outcome domain, and option. These fixed scores are the utility inputs used
-  by this paper's behavior experiments. They were produced with the Utility
-  Engineering utility-analysis pipeline
-  ([code](https://github.com/centerforaisafety/emergent-values/tree/main/utility_analysis),
-  [paper](https://arxiv.org/abs/2502.08640)); this release uses them as
-  upstream reproducibility inputs rather than re-running live utility
-  elicitation.
-- `data/raw/utility_pairwise_choices.csv`: compact pairwise utility-choice
-  counts used for the fitted utility stage. Included for inspection of the
-  upstream utility-engineering inputs; the release scripts start from the
-  fitted scores in `utility_options.csv`.
-- `data/raw/selected_pairs.csv`: sampled high-utility and low-utility outcome
-  pairs used in the behavior experiments. Included as a transparency record of
-  the sampled contrasts.
-- `data/raw/task_items.csv`: essay topics and non-essay task items.
-  Essay rows store the topic in `item_id` / `item_label`; non-essay rows also
-  include the full task prompt in `base_prompt`.
-- `data/raw/moral_cause_pairs.csv`: paired good-cause and harmful-cause texts
-  used in the no-label moral cue check. Included as a transparency record of
-  the curated cause pairs.
-- `data/raw/judged_pairs.csv`: one row per judged pair, including the raw panel
-  winner and the winner used by the paper's counting rule.
-- `data/raw/judge_votes.csv`: individual parsed judge votes for each judged
-  pair. The validation script checks that these votes reproduce the counted
-  winner used by `judged_pairs.csv`.
+- `data/inputs/utility_options.csv`: fixed fitted utility score for each paper
+  actor alias, outcome domain, and outcome option.
+- `data/inputs/task_items.csv`: essay topics and non-essay task items used for
+  generation.
+- `data/inputs/moral_cause_pairs.csv`: frozen good-cause / harmful-cause pairs
+  used in the no-label moral cue check.
+- `data/metadata/*.csv`: human-readable labels and ordering.
+- `figures/figure1.png` and `figures/figure2.png`: static README illustrations.
 
-Metadata:
+Generated local outputs:
 
-- `data/metadata/actors.csv`
-- `data/metadata/domains.csv`
-- `data/metadata/tasks.csv`
+- `outputs/inputs/selected_pairs.csv`: high-utility and low-utility outcome
+  pairs rebuilt from `utility_options.csv`.
+- `outputs/api/generation_jobs.jsonl`: prompt jobs for actor generation.
+- `outputs/api/generations.jsonl`: local actor outputs returned by OpenRouter.
+- `outputs/api/judge_votes.jsonl`: local individual judge votes returned by
+  OpenRouter.
+- `outputs/raw/judged_pairs.csv` and `outputs/raw/judge_votes.csv`: parsed
+  pair-level and vote-level records used by the analysis scripts.
+- `outputs/processed/*.csv`, `outputs/analysis/*.csv`, and
+  `outputs/figures/*`: regenerated tables, diagnostics, and plots.
 
-Source code:
+No processed or intermediate CSVs are tracked, except for the fixed upstream
+utility scores.
 
-- `src/utility_behavior_gap/analysis.py`: aggregates raw release inputs into
-  derived paper tables.
-- `src/utility_behavior_gap/stats.py`: statistical helpers used by the
-  aggregation and diagnostics.
-- `src/utility_behavior_gap/prompts.py`: prompt templates for the reported
-  generation and judging conditions.
-- `src/utility_behavior_gap/scripts/`: command-line entry points for full and
-  per-result reproduction.
+## Quick Smoke Test
 
-Derived outputs are regenerated into:
+This checks the pipeline shape without making API calls:
 
-- `outputs/processed/*.csv`
-- `outputs/analysis/*.csv`
-- `outputs/figures/*.{png,pdf}`
+```bash
+python -m utility_behavior_gap.scripts.reproduce_all --dry-run --smoke
+```
 
-## Reproduce Release Results
+For package sanity checks:
+
+```bash
+python -m pytest
+```
+
+## Full Reproduction
+
+After filling `.env`, run:
 
 ```bash
 python -m utility_behavior_gap.scripts.reproduce_all
 ```
 
-This runs tests, builds derived tables from `data/raw`, validates judged-pair
-counting, regenerates release figures, and writes paper-summary tables. The
-release covers the paper's main high-low utility result, same-count control,
-system-prompt calibration, moral no-label cue check, larger-amount consequence
-check, utility-fit diagnostics, utility-gap dose response, top/bottom utility
-examples, and aggregate judging tie counts.
+This command:
 
-## Per-Result Commands
+1. Rebuilds high-low and same-count outcome pairs from fixed utility scores.
+2. Builds actor-generation jobs for the reported high-low, same-count,
+   system-prompt, moral no-label, and larger-amount comparisons.
+3. Calls OpenRouter for actor generations.
+4. Calls OpenRouter for the blind judge panel.
+5. Aggregates votes into judged pair records.
+6. Rebuilds paper tables, diagnostics, and optional figures.
 
-Build all derived CSVs:
+Live API outputs can differ slightly across time, model versions, and sampling
+settings. The code fixes the prompt construction, pair selection, parsing, and
+aggregation rules so reviewers can rerun the same analysis pipeline.
+
+To skip figure rendering after the API run:
+
+```bash
+python -m utility_behavior_gap.scripts.reproduce_all --no-plots
+```
+
+## Per-Step Commands
+
+Rebuild utility-derived outcome pairs:
+
+```bash
+python -m utility_behavior_gap.scripts.select_pairs
+```
+
+Prepare generation jobs:
+
+```bash
+python -m utility_behavior_gap.scripts.prepare_generation_jobs \
+  --comparisons highlow_main,highlow_same_count,system_prompt,moral_nolabel,amount
+```
+
+Run actor generations:
+
+```bash
+python -m utility_behavior_gap.scripts.run_generation
+```
+
+Run blind pairwise judging:
+
+```bash
+python -m utility_behavior_gap.scripts.run_judging
+```
+
+Aggregate live judge votes:
+
+```bash
+python -m utility_behavior_gap.scripts.aggregate_judgments
+```
+
+Build derived tables:
 
 ```bash
 python -m utility_behavior_gap.scripts.aggregate_results
-```
-
-Validate judged-pair inputs:
-
-```bash
-python -m utility_behavior_gap.scripts.validate_release_inputs
-```
-
-Inputs: `data/raw/judged_pairs.csv`, `data/raw/judge_votes.csv`
-
-Outputs: `outputs/analysis/judge_vote_validation_summary.csv`
-
-Main high-low utility result:
-
-```bash
-python -m utility_behavior_gap.scripts.plot_highlow_main
-```
-
-Inputs: `outputs/processed/highlow_main_data.csv`
-
-Outputs: `outputs/figures/highlow_main.png`,
-`outputs/figures/highlow_main.pdf`
-
-Within-count check:
-
-```bash
-python -m utility_behavior_gap.scripts.plot_highlow_within_count
-```
-
-Inputs: `outputs/processed/highlow_within_count_data.csv`
-
-Outputs: `outputs/figures/highlow_within_count.png`,
-`outputs/figures/highlow_within_count.pdf`
-
-System-prompt calibration:
-
-```bash
-python -m utility_behavior_gap.scripts.plot_sys_prompt_main
-```
-
-Inputs: `outputs/processed/system_prompt_calibration_data.csv`
-
-Outputs: `outputs/figures/sys_prompt_main.png`,
-`outputs/figures/sys_prompt_main.pdf`
-
-Moral no-label cue check:
-
-```bash
-python -m utility_behavior_gap.scripts.plot_moral_nolabel_main
-```
-
-Inputs: `outputs/processed/moral_nolabel_main_data.csv`
-
-Outputs: `outputs/figures/moral_nolabel_main.png`,
-`outputs/figures/moral_nolabel_main.pdf`
-
-Larger-amount consequence check:
-
-```bash
-python -m utility_behavior_gap.scripts.plot_incentive_amount_main
-python -m utility_behavior_gap.scripts.analyze_amount_pooled
-```
-
-Inputs: `outputs/processed/incentive_channel_data.csv`
-
-Outputs: `outputs/figures/incentive_amount_main.png`,
-`outputs/figures/incentive_amount_main.pdf`,
-`outputs/analysis/amount_condition_per_cell.csv`, and
-`outputs/analysis/amount_condition_pooled_by_task.csv`
-
-Paper summary tables:
-
-```bash
 python -m utility_behavior_gap.scripts.summarize_paper_tables
-```
-
-Outputs: `outputs/analysis/cue_summary.csv`,
-`outputs/analysis/judging_tie_summary.csv`,
-`outputs/analysis/utility_replication_holdout.csv`, and
-`outputs/analysis/utility_replication_monotonicity.csv`
-
-Utility-gap dose response:
-
-```bash
+python -m utility_behavior_gap.scripts.analyze_amount_pooled
 python -m utility_behavior_gap.scripts.analyze_utility_gap_dose_response
 ```
 
-Inputs: `outputs/analysis/utility_gap_dose_response_trials.csv`
-
-Outputs: `outputs/analysis/utility_gap_dose_response_bins.csv`,
-`outputs/analysis/utility_gap_dose_response_regression.csv`,
-`outputs/figures/utility_gap_dose_response.png`, and
-`outputs/figures/utility_gap_dose_response.pdf`
-
-The regenerated trial table contains 10,487 reported high-low judged pairs,
-including 10,230 non-tied pairs.
-
-Utility top/bottom examples:
+Render figures:
 
 ```bash
+python -m utility_behavior_gap.scripts.plot_highlow_main
+python -m utility_behavior_gap.scripts.plot_highlow_within_count
+python -m utility_behavior_gap.scripts.plot_sys_prompt_main
+python -m utility_behavior_gap.scripts.plot_moral_nolabel_main
+python -m utility_behavior_gap.scripts.plot_incentive_amount_main
 python -m utility_behavior_gap.scripts.plot_utility_top_bottom
 ```
 
-Inputs: `outputs/analysis/utility_top_bottom_10_by_actor_domain.csv`
+## Sampling Defaults
 
-Outputs: `outputs/figures/utility_top_bottom_examples.png`,
-`outputs/figures/utility_top_bottom_examples.pdf`
+`select_pairs` samples 80 high-low pairs per actor-domain from the top and
+bottom thirds of the fitted utility ranking, with replacement. Same-count pairs
+use the same rule within each count group for the religion, animal, and country
+domains.
 
+`prepare_generation_jobs` uses the full task pool by default. High-low jobs
+cycle task items across sampled pairs. System-prompt and larger-amount checks
+default to five repeats per item. The no-label moral check defaults to five
+cause-pair samples per item, rotating through the frozen cause set.
 
+Use `--items-per-task`, `--pairs-per-actor-domain`, `--system-repeats`,
+`--amount-repeats`, and `--moral-causes-per-item` to run smaller checks.
+
+## Scope
+
+Included: OpenRouter-based behavioral generation, OpenRouter-based blind
+pairwise judging, pair selection from fitted utilities, prompt construction,
+vote parsing, panel aggregation, paper summary tables, diagnostics, and plotting
+scripts.
+
+Excluded: re-running the upstream utility fitting stage, private run caches,
+old exploratory experiments, private notes, logs, API key files, and generated
+intermediate/final outputs.

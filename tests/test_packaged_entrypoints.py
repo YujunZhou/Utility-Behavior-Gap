@@ -3,9 +3,11 @@ from pathlib import Path
 
 
 ENTRYPOINT_MODULES = [
+    "utility_behavior_gap.scripts.aggregate_judgments",
     "utility_behavior_gap.scripts.aggregate_results",
     "utility_behavior_gap.scripts.analyze_amount_pooled",
     "utility_behavior_gap.scripts.analyze_utility_gap_dose_response",
+    "utility_behavior_gap.scripts.prepare_generation_jobs",
     "utility_behavior_gap.scripts.plot_highlow_main",
     "utility_behavior_gap.scripts.plot_highlow_within_count",
     "utility_behavior_gap.scripts.plot_incentive_amount_main",
@@ -13,8 +15,10 @@ ENTRYPOINT_MODULES = [
     "utility_behavior_gap.scripts.plot_sys_prompt_main",
     "utility_behavior_gap.scripts.plot_utility_top_bottom",
     "utility_behavior_gap.scripts.reproduce_all",
+    "utility_behavior_gap.scripts.run_generation",
+    "utility_behavior_gap.scripts.run_judging",
+    "utility_behavior_gap.scripts.select_pairs",
     "utility_behavior_gap.scripts.summarize_paper_tables",
-    "utility_behavior_gap.scripts.validate_release_inputs",
 ]
 
 

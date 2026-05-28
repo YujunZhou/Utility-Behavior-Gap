@@ -1,4 +1,4 @@
-"""Judge-panel counting rules for the released pairwise comparisons."""
+"""Judge-panel counting rules for generated pairwise comparisons."""
 
 from __future__ import annotations
 
@@ -14,9 +14,8 @@ def derive_panel_winner_condition(row: Mapping[str, str], vote_conditions: Itera
     """Derive a panel winner from sanitized individual vote conditions.
 
     Older essay high-low runs represented a three-way X/Y/TIE split as a
-    non-counted disagreement. Later scale-up runs treated the same split as a
-    panel tie. The release keeps this source-specific rule explicit so the
-    counted winner can be checked from `judge_votes.csv`.
+    non-counted disagreement. New OpenRouter reruns use the later rule: split
+    panels are counted as ties.
     """
 
     valid = [value for value in vote_conditions if value and value != "unresolved"]

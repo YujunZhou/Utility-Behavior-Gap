@@ -1,4 +1,4 @@
-"""Aggregate raw release inputs into the tables used by the paper scripts."""
+"""Aggregate generated judge records into the tables used by paper scripts."""
 
 from __future__ import annotations
 
@@ -18,6 +18,7 @@ from utility_behavior_gap.constants import (
     MORAL_TASK_ORDER,
     TASK_LABEL,
 )
+from utility_behavior_gap.paths import ANALYSIS, INPUTS, OUTPUT_RAW, PROCESSED
 from utility_behavior_gap.stats import parse_entity_count, spearman, wilson_ci
 
 
@@ -310,11 +311,16 @@ def build_utility_top_bottom(utility_rows: list[dict[str, str]], k: int = 10) ->
 
 
 def aggregate_all(root: Path) -> None:
-    data = root / "data"
-    processed = root / "outputs" / "processed"
-    analysis = root / "outputs" / "analysis"
-    judged = read_rows(data / "raw" / "judged_pairs.csv")
-    utility = read_rows(data / "raw" / "utility_options.csv")
+    processed = PROCESSED
+    analysis = ANALYSIS
+    judged_path = OUTPUT_RAW / "judged_pairs.csv"
+    if not judged_path.exists():
+        raise FileNotFoundError(
+            "Run live generation, live judging, and "
+            "`python -m utility_behavior_gap.scripts.aggregate_judgments` first."
+        )
+    judged = read_rows(judged_path)
+    utility = read_rows(INPUTS / "utility_options.csv")
 
     write_rows(processed / "highlow_main_data.csv", aggregate_highlow_main(judged))
     write_rows(processed / "highlow_within_count_data.csv", aggregate_highlow_same_count(judged))
