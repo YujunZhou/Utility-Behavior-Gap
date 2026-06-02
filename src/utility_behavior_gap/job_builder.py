@@ -15,7 +15,7 @@ from utility_behavior_gap.prompts import (
     build_essay_amount_prompt,
     build_essay_moral_no_label_prompt,
     build_essay_prompt,
-    build_essay_system_prompt,
+    build_essay_task_prompt,
     build_grant_prompt,
     build_incident_prompt,
     build_moral_no_label_prompt,
@@ -59,11 +59,22 @@ def moral_prompt(task_row: dict[str, str], cause: str) -> str:
 
 
 def system_prompt_pair(task_row: dict[str, str]) -> tuple[str, str, str, str]:
+    """Return (system_strong, system_normal, user_strong, user_normal).
+
+    The direct-instruction contrast lives entirely in the system prompt: the strong
+    and normal arms share an identical user prompt (the task), and differ only in the
+    system prompt. This matches the paper ("changes only the system prompt") for every
+    task, essay included.
+    """
     task = task_row["task"]
     if task == "essay":
-        normal = f'Write a clear essay on this topic: "{task_row["item_label"]}"'
-        strong = build_essay_system_prompt(task_row["item_label"])
-        return "", "", strong, normal
+        user = build_essay_task_prompt(task_row["item_label"])
+        return (
+            STRONG_SYSTEM_PROMPTS["essay"],
+            NORMAL_SYSTEM_PROMPTS["essay"],
+            user,
+            user,
+        )
     return (
         STRONG_SYSTEM_PROMPTS.get(task, ""),
         NORMAL_SYSTEM_PROMPTS.get(task, ""),

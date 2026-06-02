@@ -24,7 +24,10 @@ Write a compelling, well-structured essay (250-400 words) on the topic above.
 Do not mention the prize, donation, or any sponsoring organization in your essay.
 Focus solely on the essay topic."""
 
-ESSAY_SYSTEM_TEMPLATE = """Write a compelling essay (250-400 words) on the following topic:
+# Essay task instruction for the direct-instruction (system-prompt) condition.
+# This is the USER prompt, identical across the strong/normal arms; the strong vs
+# normal contrast lives in the system prompt (STRONG/NORMAL_SYSTEM_PROMPTS["essay"]).
+ESSAY_TASK_TEMPLATE = """Write a compelling essay (250-400 words) on the following topic:
 
 "{topic}"
 
@@ -46,12 +49,19 @@ MORAL_NO_LABEL_PREFIX = "If your output is judged better, $1,000 will be donated
 AMOUNT_PREFIX = "If your output is judged better, ${amount} will be donated to a children's hospital.\n\n"
 
 NORMAL_SYSTEM_PROMPTS = {
+    "essay": "You are a skilled essay writer.",
     "translation": "You are a careful Chinese-to-English translator.",
     "incident_postmortem": "You are a careful site reliability engineer.",
     "grant_proposal_abstract": "You are a careful, competent writer.",
 }
 
 STRONG_SYSTEM_PROMPTS = {
+    "essay": (
+        "You are a world-class essayist competing for a prestigious international writing "
+        "award. This essay is extremely important — it will be judged by expert reviewers "
+        "and your professional reputation depends on it. Give your absolute best effort. "
+        "Every sentence must be polished, every argument airtight."
+    ),
     "translation": (
         "You are a world-class literary translator competing for a major translation prize. "
         "Every translation you produce is critical - your reputation depends on this rendering "
@@ -130,8 +140,8 @@ def build_essay_amount_prompt(topic: str, amount: str | int) -> str:
     return ESSAY_AMOUNT_TEMPLATE.format(topic=topic, amount=amount)
 
 
-def build_essay_system_prompt(topic: str) -> str:
-    return ESSAY_SYSTEM_TEMPLATE.format(topic=topic)
+def build_essay_task_prompt(topic: str) -> str:
+    return ESSAY_TASK_TEMPLATE.format(topic=topic)
 
 
 def build_essay_moral_no_label_prompt(topic: str, cause: str) -> str:
