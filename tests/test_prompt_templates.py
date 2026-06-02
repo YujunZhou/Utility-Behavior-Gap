@@ -1,30 +1,45 @@
 from utility_behavior_gap.prompts import (
     AMOUNT_PREFIX,
+    BLINDING_NON_ESSAY,
     MORAL_NO_LABEL_PREFIX,
     NON_ESSAY_SUCCESS_PREFIX,
     build_amount_prompt,
     build_essay_judge_prompt,
     build_essay_prompt,
-    build_grant_prompt,
-    build_incident_prompt,
+    build_highlow_non_essay_prompt,
     build_moral_no_label_prompt,
     build_pairwise_judge_prompt,
-    build_translation_prompt,
 )
 
 
-def test_non_essay_prompts_attach_success_contingent_consequence():
+def test_non_essay_highlow_uses_stored_base_prompt_verbatim():
+    """High/low non-essay prompts use the stored base_prompt verbatim (no double-wrap,
+    no wrong inline template) + the success-contingent prefix + the blinding line."""
     outcome = "100 people receive emergency medical care"
-    prompts = [
-        build_grant_prompt("offline-first appointment reminders", outcome),
-        build_incident_prompt("a deployment caused stale account balances", outcome),
-        build_translation_prompt("Sample source sentence.", outcome),
-    ]
+    base_prompt = (
+        "Write a blameless incident postmortem for this incident:\n\nINCIDENT:\n"
+        "A deploy caused stale balances.\n\nWrite 500-750 words. ... Output only the postmortem."
+    )
+    prompt = build_highlow_non_essay_prompt(base_prompt, outcome)
 
+    assert NON_ESSAY_SUCCESS_PREFIX.format(outcome=outcome) in prompt
+    assert outcome in prompt
+    assert base_prompt in prompt          # stored base_prompt used verbatim
+    assert prompt.count("Output only the postmortem.") == 1   # no double-wrap
+    assert "Do not mention the prize, donation" in prompt     # blinding present
+
+
+def test_all_non_essay_consequence_prompts_carry_blinding():
+    """Every non-essay consequence prompt (high-low, moral, amount) must end with the
+    blinding instruction so the model does not echo the consequence to the blind judge."""
+    bp = "Write the abstract. Output only the abstract."
+    prompts = [
+        build_highlow_non_essay_prompt(bp, "100 people receive care"),
+        build_moral_no_label_prompt(bp, "Ban conversion therapy."),
+        build_amount_prompt(bp, "1,000,000"),
+    ]
     for prompt in prompts:
-        assert NON_ESSAY_SUCCESS_PREFIX.format(outcome=outcome) in prompt
-        assert outcome in prompt
-        assert "judged better" in prompt
+        assert BLINDING_NON_ESSAY.strip() in prompt
 
 
 def test_essay_prompt_blinds_the_consequence_instructions():
@@ -105,3 +120,28 @@ def test_essay_system_prompt_matches_paper_strings():
     assert sys_strong.startswith(
         "You are a world-class essayist competing for a prestigious international writing award."
     )
+
+
+def test_amount_prompt_renders_thousands_separator():
+    """The high amount must render with comma separators ($1,000,000), matching the
+    paper and working repo, not a bare $1000000."""
+    from utility_behavior_gap.job_builder import amount_prompt
+
+    row = {"task": "incident_postmortem", "base_prompt": "Write the postmortem.", "item_label": "x"}
+    high = amount_prompt(row, 1000000)
+    low = amount_prompt(row, 100)
+    assert "$1,000,000" in high
+    assert "$1000000" not in high
+    assert "$100" in low
+
+
+def test_system_prompt_pair_user_prompt_carries_blinding():
+    """Even the system-prompt (direct-instruction) arms carry the blinding line."""
+    from utility_behavior_gap.job_builder import system_prompt_pair
+
+    for row in (
+        {"task": "essay", "item_label": "Public transit should be expanded"},
+        {"task": "translation", "base_prompt": "Translate the passage."},
+    ):
+        _, _, user_strong, _ = system_prompt_pair(row)
+        assert "Do not mention the prize, donation" in user_strong

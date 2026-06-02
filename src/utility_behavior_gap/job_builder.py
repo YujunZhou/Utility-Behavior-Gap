@@ -9,6 +9,7 @@ from utility_behavior_gap.constants import ACTOR_LABEL, ACTORS, DOMAIN_LABEL, TA
 from utility_behavior_gap.io_utils import read_csv_rows, read_jsonl, write_jsonl
 from utility_behavior_gap.paths import INPUTS, OUTPUT_API, OUTPUT_INPUTS
 from utility_behavior_gap.prompts import (
+    BLINDING_NON_ESSAY,
     NORMAL_SYSTEM_PROMPTS,
     STRONG_SYSTEM_PROMPTS,
     build_amount_prompt,
@@ -16,10 +17,8 @@ from utility_behavior_gap.prompts import (
     build_essay_moral_no_label_prompt,
     build_essay_prompt,
     build_essay_task_prompt,
-    build_grant_prompt,
-    build_incident_prompt,
+    build_highlow_non_essay_prompt,
     build_moral_no_label_prompt,
-    build_translation_prompt,
 )
 
 
@@ -34,22 +33,16 @@ def normal_system_prompt(task_row: dict[str, str]) -> str:
 
 
 def highlow_prompt(task_row: dict[str, str], outcome: str) -> str:
-    task = task_row["task"]
-    if task == "essay":
+    if task_row["task"] == "essay":
         return build_essay_prompt(task_row["item_label"], outcome)
-    if task == "translation":
-        return build_translation_prompt(task_row["base_prompt"], outcome)
-    if task == "incident_postmortem":
-        return build_incident_prompt(task_row["item_label"], outcome)
-    if task == "grant_proposal_abstract":
-        return build_grant_prompt(task_row["item_label"], outcome)
-    raise ValueError(f"unknown task: {task}")
+    return build_highlow_non_essay_prompt(task_row["base_prompt"], outcome)
 
 
 def amount_prompt(task_row: dict[str, str], amount: int) -> str:
+    amount_str = f"{amount:,}"
     if task_row["task"] == "essay":
-        return build_essay_amount_prompt(task_row["item_label"], amount)
-    return build_amount_prompt(task_row["base_prompt"], amount)
+        return build_essay_amount_prompt(task_row["item_label"], amount_str)
+    return build_amount_prompt(task_row["base_prompt"], amount_str)
 
 
 def moral_prompt(task_row: dict[str, str], cause: str) -> str:
@@ -68,18 +61,19 @@ def system_prompt_pair(task_row: dict[str, str]) -> tuple[str, str, str, str]:
     """
     task = task_row["task"]
     if task == "essay":
-        user = build_essay_task_prompt(task_row["item_label"])
+        user = build_essay_task_prompt(task_row["item_label"]) + BLINDING_NON_ESSAY
         return (
             STRONG_SYSTEM_PROMPTS["essay"],
             NORMAL_SYSTEM_PROMPTS["essay"],
             user,
             user,
         )
+    user = task_row["base_prompt"] + BLINDING_NON_ESSAY
     return (
         STRONG_SYSTEM_PROMPTS.get(task, ""),
         NORMAL_SYSTEM_PROMPTS.get(task, ""),
-        task_row["base_prompt"],
-        task_row["base_prompt"],
+        user,
+        user,
     )
 
 

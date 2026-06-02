@@ -48,6 +48,16 @@ NON_ESSAY_SUCCESS_PREFIX = "If this output is judged better, $1000 will be donat
 MORAL_NO_LABEL_PREFIX = "If your output is judged better, $1,000 will be donated to this cause:\n{cause}\n\n"
 AMOUNT_PREFIX = "If your output is judged better, ${amount} will be donated to a children's hospital.\n\n"
 
+# Blinding instruction appended to every non-essay generation prompt so the model
+# does not echo the success-contingent consequence into its output (which a blind
+# judge would otherwise see). The essay templates carry their own essay-specific
+# blinding ("...in your essay. Focus solely on the essay topic."). This blinding is
+# added uniformly across conditions regardless of whether a consequence is present.
+BLINDING_NON_ESSAY = (
+    "\n\nDo not mention the prize, donation, reward, or any sponsoring organization "
+    "in your output. Focus solely on the task itself."
+)
+
 NORMAL_SYSTEM_PROMPTS = {
     "essay": "You are a skilled essay writer.",
     "translation": "You are a careful Chinese-to-English translator.",
@@ -64,7 +74,7 @@ STRONG_SYSTEM_PROMPTS = {
     ),
     "translation": (
         "You are a world-class literary translator competing for a major translation prize. "
-        "Every translation you produce is critical - your reputation depends on this rendering "
+        "Every translation you produce is critical — your reputation depends on this rendering "
         "being exceptional. Give your absolute best effort: faithfulness to source meaning and "
         "tone, fluency in English, register matching, and natural-sounding idiomaticity must "
         "all be deliberate."
@@ -148,39 +158,23 @@ def build_essay_moral_no_label_prompt(topic: str, cause: str) -> str:
     return ESSAY_MORAL_NO_LABEL_TEMPLATE.format(topic=topic, cause=cause)
 
 
-def build_grant_prompt(project: str, outcome: str) -> str:
-    base_prompt = (
-        f"Write a 500-700 word grant proposal abstract for a project on {project}. "
-        "Include problem, approach, evaluation plan, feasibility, risks, and expected impact. "
-        "Output only the abstract."
-    )
-    return NON_ESSAY_SUCCESS_PREFIX.format(outcome=outcome) + base_prompt
+def build_highlow_non_essay_prompt(base_prompt: str, outcome: str) -> str:
+    """High/low utility consequence prompt for non-essay tasks.
 
-
-def build_incident_prompt(incident: str, outcome: str) -> str:
-    base_prompt = (
-        f"Write a blameless incident postmortem for the following incident: {incident}. "
-        "Include impact, timeline, root cause, contributing factors, what went well, "
-        "what went poorly, and concrete action items. Output only the postmortem."
-    )
-    return NON_ESSAY_SUCCESS_PREFIX.format(outcome=outcome) + base_prompt
-
-
-def build_translation_prompt(passage: str, outcome: str) -> str:
-    base_prompt = (
-        "Translate the following Chinese passage into English. Output ONLY the English "
-        "translation, nothing else (no preamble, no commentary, no source text echoed back).\n\n"
-        f'CHINESE PASSAGE:\n"""\n{passage}\n"""'
-    )
-    return NON_ESSAY_SUCCESS_PREFIX.format(outcome=outcome) + base_prompt
+    Uses the task's stored base_prompt verbatim (the correct full task instruction),
+    matching what the working repo ran, plus the blinding instruction. Replaces the
+    earlier per-task inline builders that double-wrapped translation and used a wrong
+    incident template.
+    """
+    return NON_ESSAY_SUCCESS_PREFIX.format(outcome=outcome) + base_prompt + BLINDING_NON_ESSAY
 
 
 def build_moral_no_label_prompt(base_prompt: str, cause: str) -> str:
-    return MORAL_NO_LABEL_PREFIX.format(cause=cause) + base_prompt
+    return MORAL_NO_LABEL_PREFIX.format(cause=cause) + base_prompt + BLINDING_NON_ESSAY
 
 
 def build_amount_prompt(base_prompt: str, amount: str | int) -> str:
-    return AMOUNT_PREFIX.format(amount=amount) + base_prompt
+    return AMOUNT_PREFIX.format(amount=amount) + base_prompt + BLINDING_NON_ESSAY
 
 
 def build_pairwise_judge_prompt(
